@@ -104,7 +104,7 @@ class PowerManagerImpl: PowerManager {
         // First try with sudo (passwordless if configured)
         let task = Process()
         task.launchPath = "/usr/bin/sudo"
-        task.arguments = ["-n", "pmset", "-b", "disablesleep", value]
+        task.arguments = ["-n", "pmset", "-a", "disablesleep", value]
         
         let pipe = Pipe()
         task.standardOutput = pipe
@@ -125,7 +125,7 @@ class PowerManagerImpl: PowerManager {
         
         // Fall back to AppleScript method (will ask for password)
         let script = """
-        do shell script "pmset -b disablesleep \(value)" with administrator privileges
+        do shell script "pmset -a disablesleep \(value)" with administrator privileges
         """
         
         var error: NSDictionary?
@@ -187,8 +187,42 @@ class PowerManagerImpl: PowerManager {
         if isCaffeineEnabled {
             _ = disableCaffeine()
             userDefaults.set(false, forKey: caffeineEnabledKey)
+            
+            // Force immediate sleep if lid is closed
+            forceImmediateSleep()
         }
         cancelTimer()
+    }
+    
+    private func forceImmediateSleep() {
+        // First, try to check if the lid is closed
+        let task = Process()
+        task.launchPath = "/usr/sbin/ioreg"
+        task.arguments = ["-r", "-k", "AppleClamshellState", "-d", "4"]
+        
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        
+        do {
+            try task.run()
+            task.waitUntilExit()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8) {
+                // Check if lid is closed (AppleClamshellState = Yes)
+                if output.contains("\"AppleClamshellState\" = Yes") {
+                    // Lid is closed, force immediate sleep
+                    let sleepTask = Process()
+                    sleepTask.launchPath = "/usr/bin/pmset"
+                    sleepTask.arguments = ["sleepnow"]
+                    
+                    try sleepTask.run()
+                    sleepTask.waitUntilExit()
+                }
+            }
+        } catch {
+            print("Error checking lid state or forcing sleep: \(error)")
+        }
     }
     
     deinit {
