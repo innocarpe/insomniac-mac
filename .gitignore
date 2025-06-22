@@ -101,6 +101,7 @@ Caffeine.app/
 *.tmp
 .vscode/
 .idea/
+*.dmg
 
 # Build artifacts
 *.o
