@@ -156,6 +156,12 @@ class PowerManagerImpl: PowerManager {
     }
     
     func setTimer(minutes: Int, completion: @escaping () -> Void) {
+        // Validate minimum timer value
+        guard minutes > 0 else {
+            print("Invalid timer value: \(minutes) minutes. Timer must be at least 1 minute.")
+            return
+        }
+        
         // Cancel existing timer
         cancelTimer()
         
