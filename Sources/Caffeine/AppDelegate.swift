@@ -3,7 +3,12 @@ import UserNotifications
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarController: StatusBarController?
-    private let powerManager = PowerManagerImpl()
+    private let powerManager: PowerManager
+    
+    init(powerManager: PowerManager? = nil) {
+        self.powerManager = powerManager ?? PowerManagerImpl()
+        super.init()
+    }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Request notification permission
