@@ -80,7 +80,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func verifyPasswordlessSetup() -> Bool {
         let task = Process()
         task.launchPath = "/usr/bin/sudo"
-        task.arguments = ["-n", "pmset", "-g"]
+        task.arguments = ["-n", "pmset", "-a", "disablesleep", "0"]
         
         let pipe = Pipe()
         task.standardOutput = pipe
