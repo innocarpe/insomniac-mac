@@ -53,6 +53,8 @@ class StatusBarController: NSObject, NSMenuDelegate {
         
         // Timer options
         let timerOptions = [
+            (5, "5분"),
+            (10, "10분"),
             (30, "30분"),
             (60, "1시간"),
             (120, "2시간"),
