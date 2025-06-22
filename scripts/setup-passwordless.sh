@@ -8,7 +8,7 @@ echo ""
 
 # Create sudoers file for pmset
 SUDOERS_FILE="/etc/sudoers.d/caffeine"
-SUDOERS_CONTENT="%admin ALL=(ALL) NOPASSWD: /usr/bin/pmset -b disablesleep 0, /usr/bin/pmset -b disablesleep 1"
+SUDOERS_CONTENT="%admin ALL=(ALL) NOPASSWD: /usr/bin/pmset -a disablesleep 0, /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset sleepnow"
 
 echo "Creating sudoers configuration..."
 echo "$SUDOERS_CONTENT" | sudo tee "$SUDOERS_FILE" > /dev/null
