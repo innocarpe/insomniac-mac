@@ -120,7 +120,13 @@ class PowerManagerImpl: PowerManager {
                 return true
             }
         } catch {
-            // Fall through to AppleScript method
+            print("Sudo execution failed: \(error)")
+        }
+        
+        // If passwordless sudo failed and we thought it was set up, just reset the flag
+        if hasPasswordlessSetup {
+            print("Passwordless sudo failed but was marked as set up. Resetting flag.")
+            userDefaults.set(false, forKey: "PasswordlessSetupComplete")
         }
         
         // Fall back to AppleScript method (will ask for password)
@@ -131,11 +137,17 @@ class PowerManagerImpl: PowerManager {
         var error: NSDictionary?
         if let scriptObject = NSAppleScript(source: script) {
             scriptObject.executeAndReturnError(&error)
-            return error == nil
+            if error == nil {
+                print("Executed command via AppleScript with password prompt")
+                return true
+            } else {
+                print("AppleScript execution failed: \(error?.description ?? "unknown error")")
+            }
         }
         
         return false
     }
+    
     
     func checkPasswordlessSetup() -> Bool {
         let task = Process()
