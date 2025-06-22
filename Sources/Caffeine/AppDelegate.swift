@@ -55,12 +55,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let userDefaults = UserDefaults.standard
         let setupKey = "PasswordlessSetupComplete"
         
-        // Check if already setup
+        // If already marked as complete, just verify it works silently
         if userDefaults.bool(forKey: setupKey) {
+            if verifyPasswordlessSetup() {
+                return // Everything is working
+            } else {
+                // Reset flag, will show dialog below
+                print("Passwordless setup verification failed, resetting flag")
+                userDefaults.set(false, forKey: setupKey)
+            }
+        }
+        
+        // If not set up or verification failed, check if it actually works
+        if verifyPasswordlessSetup() {
+            // It works even though not marked, just mark it as complete
+            userDefaults.set(true, forKey: setupKey)
             return
         }
         
-        // Check if passwordless sudo already works
+        // Only show dialog if truly needed
+        showPasswordlessSetupDialog()
+    }
+    
+    private func verifyPasswordlessSetup() -> Bool {
         let task = Process()
         task.launchPath = "/usr/bin/sudo"
         task.arguments = ["-n", "pmset", "-g"]
@@ -72,19 +89,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             try task.run()
             task.waitUntilExit()
-            
-            if task.terminationStatus == 0 {
-                // Already works, mark as complete
-                userDefaults.set(true, forKey: setupKey)
-                return
-            }
+            return task.terminationStatus == 0
         } catch {
-            // Continue to setup
+            return false
         }
-        
-        // Show setup dialog
-        showPasswordlessSetupDialog()
     }
+    
     
     private func showPasswordlessSetupDialog() {
         DispatchQueue.main.async {
@@ -110,7 +120,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     private func performPasswordlessSetup() {
         let script = """
-        do shell script "echo '%admin ALL=(ALL) NOPASSWD: /usr/bin/pmset -b disablesleep 0, /usr/bin/pmset -b disablesleep 1' | sudo tee /etc/sudoers.d/caffeine && sudo chmod 0440 /etc/sudoers.d/caffeine" with administrator privileges
+        do shell script "echo '%admin ALL=(ALL) NOPASSWD: /usr/bin/pmset -a disablesleep 0, /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset sleepnow' | sudo tee /etc/sudoers.d/caffeine && sudo chmod 0440 /etc/sudoers.d/caffeine && sudo chown root:wheel /etc/sudoers.d/caffeine" with administrator privileges
         """
         
         var error: NSDictionary?
@@ -118,22 +128,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             scriptObject.executeAndReturnError(&error)
             
             if error == nil {
-                UserDefaults.standard.set(true, forKey: "PasswordlessSetupComplete")
-                
-                let successAlert = NSAlert()
-                successAlert.messageText = "설정 완료!"
-                successAlert.informativeText = "이제 Caffeine을 비밀번호 없이 사용할 수 있습니다."
-                successAlert.alertStyle = .informational
-                successAlert.addButton(withTitle: "시작하기")
-                successAlert.runModal()
+                // Verify the setup actually works
+                Thread.sleep(forTimeInterval: 1.0)
+                if verifyPasswordlessSetup() {
+                    UserDefaults.standard.set(true, forKey: "PasswordlessSetupComplete")
+                    
+                    let successAlert = NSAlert()
+                    successAlert.messageText = "설정 완료!"
+                    successAlert.informativeText = "이제 Caffeine을 비밀번호 없이 사용할 수 있습니다."
+                    successAlert.alertStyle = .informational
+                    successAlert.addButton(withTitle: "시작하기")
+                    successAlert.runModal()
+                } else {
+                    showSetupFailureAlert("설정이 완료되었지만 검증에 실패했습니다.")
+                }
             } else {
-                let errorAlert = NSAlert()
-                errorAlert.messageText = "설정 실패"
-                errorAlert.informativeText = "설정 중 오류가 발생했습니다. 나중에 다시 시도해주세요."
-                errorAlert.alertStyle = .warning
-                errorAlert.addButton(withTitle: "확인")
-                errorAlert.runModal()
+                let errorMessage = error?["NSAppleScriptErrorMessage"] as? String ?? "알 수 없는 오류"
+                showSetupFailureAlert("설정 중 오류가 발생했습니다: \(errorMessage)")
             }
+        }
+    }
+    
+    private func showSetupFailureAlert(_ message: String) {
+        let errorAlert = NSAlert()
+        errorAlert.messageText = "설정 실패"
+        errorAlert.informativeText = "\(message)\n\n터미널에서 다음 명령을 실행하여 수동으로 설정할 수 있습니다:\n\necho '%admin ALL=(ALL) NOPASSWD: /usr/bin/pmset -a disablesleep 0, /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset sleepnow' | sudo tee /etc/sudoers.d/caffeine && sudo chmod 0440 /etc/sudoers.d/caffeine"
+        errorAlert.alertStyle = .warning
+        errorAlert.addButton(withTitle: "확인")
+        errorAlert.addButton(withTitle: "다시 시도")
+        
+        if errorAlert.runModal() == .alertSecondButtonReturn {
+            performPasswordlessSetup()
         }
     }
 }
