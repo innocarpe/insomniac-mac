@@ -22,6 +22,10 @@ class MockPowerManager: PowerManager {
     var checkPasswordlessSetupResult = true
     var timerCompletionHandler: (() -> Void)?
     
+    // 새로운 기능 테스트용
+    var mockLidClosed = false
+    var mockPowerSource = "Battery Power"
+    
     // MARK: - PowerManager Protocol Implementation
     
     var isCaffeineEnabled: Bool {
@@ -56,6 +60,11 @@ class MockPowerManager: PowerManager {
     func setTimer(minutes: Int, completion: @escaping () -> Void) {
         setTimerCallCount += 1
         
+        // 0분이나 음수는 무효한 값으로 처리 (실제 구현과 동일하게)
+        guard minutes > 0 else {
+            return
+        }
+        
         // 타이머 설정 시 자동으로 카페인 모드 활성화
         if !mockIsCaffeineEnabled {
             mockIsCaffeineEnabled = true
@@ -64,11 +73,6 @@ class MockPowerManager: PowerManager {
         mockIsTimerActive = true
         mockRemainingTime = TimeInterval(minutes * 60)
         timerCompletionHandler = completion
-        
-        // 테스트를 위해 즉시 타이머 만료 시뮬레이션 가능
-        if minutes == 0 {
-            simulateTimerExpiration()
-        }
     }
     
     func cancelTimer() {
@@ -123,5 +127,8 @@ class MockPowerManager: PowerManager {
         toggleCaffeineSuccess = true
         checkPasswordlessSetupResult = true
         timerCompletionHandler = nil
+        
+        mockLidClosed = false
+        mockPowerSource = "Battery Power"
     }
 }
