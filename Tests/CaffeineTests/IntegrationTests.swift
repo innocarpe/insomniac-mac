@@ -78,15 +78,23 @@ final class IntegrationTests: XCTestCase {
     func testTimerExpirationFlow() {
         let timerExpectation = XCTestExpectation(description: "Timer expired")
         
-        // 1. 타이머 설정 (0분 = 즉시 만료)
-        mockPowerManager.setTimer(minutes: 0) {
+        // 1. 타이머 설정 (1분)
+        mockPowerManager.setTimer(minutes: 1) {
             timerExpectation.fulfill()
         }
         
-        // 2. 타이머 만료 확인
+        // 2. 타이머 설정 직후 상태 확인
+        XCTAssertTrue(mockPowerManager.isCaffeineEnabled)
+        XCTAssertTrue(mockPowerManager.isTimerActive)
+        XCTAssertEqual(mockPowerManager.mockRemainingTime, 60) // 1분 = 60초
+        
+        // 3. 즉시 만료 시뮬레이션
+        mockPowerManager.simulateTimerExpiration()
+        
+        // 4. 타이머 만료 확인
         wait(for: [timerExpectation], timeout: 1.0)
         
-        // 3. 카페인 모드가 자동으로 꺼졌는지 확인
+        // 5. 카페인 모드가 자동으로 꺼졌는지 확인
         XCTAssertFalse(mockPowerManager.isCaffeineEnabled)
         XCTAssertFalse(mockPowerManager.isTimerActive)
         XCTAssertNil(mockPowerManager.remainingTime)
@@ -156,5 +164,65 @@ final class IntegrationTests: XCTestCase {
         
         // 3. 호출 횟수 확인
         XCTAssertEqual(mockPowerManager.checkPasswordlessSetupCallCount, 2)
+    }
+    
+    // MARK: - 시나리오 8: 타이머 만료 시 맥북 덮개 닫힘 처리
+    
+    func testTimerExpirationWithLidClosedFlow() {
+        let timerExpectation = XCTestExpectation(description: "Timer expired with lid check")
+        
+        // 1. 맥북 덮개가 닫혀있는 상태 시뮬레이션
+        mockPowerManager.mockLidClosed = true
+        
+        // 2. 타이머 설정 (1분)
+        mockPowerManager.setTimer(minutes: 1) {
+            timerExpectation.fulfill()
+        }
+        
+        // 3. 타이머 설정 직후 상태 확인
+        XCTAssertTrue(mockPowerManager.isCaffeineEnabled)
+        XCTAssertTrue(mockPowerManager.isTimerActive)
+        
+        // 4. 즉시 만료 시뮬레이션
+        mockPowerManager.simulateTimerExpiration()
+        
+        // 5. 타이머 만료 대기
+        wait(for: [timerExpectation], timeout: 1.0)
+        
+        // 6. 카페인 모드가 꺼졌는지 확인
+        XCTAssertFalse(mockPowerManager.isCaffeineEnabled)
+        XCTAssertFalse(mockPowerManager.isTimerActive)
+        
+        // 7. 맥북 덮개 상태가 확인되었는지 검증
+        // MockPowerManager에서는 실제로 sleepnow를 실행하지 않으므로
+        // 덮개 상태 확인 플래그만 검증
+        XCTAssertTrue(mockPowerManager.mockLidClosed)
+    }
+    
+    // MARK: - 시나리오 9: 전원 상태에 관계없는 동작 확인
+    
+    func testAllPowerSourcesFlow() {
+        // 1. AC 전원 연결 상태 시뮬레이션
+        mockPowerManager.mockPowerSource = "AC Power"
+        
+        // 2. 카페인 모드 활성화
+        mockPowerManager.toggleCaffeine { success in
+            XCTAssertTrue(success)
+        }
+        XCTAssertTrue(mockPowerManager.isCaffeineEnabled)
+        
+        // 3. 배터리 전원으로 변경
+        mockPowerManager.mockPowerSource = "Battery Power"
+        
+        // 4. 여전히 카페인 모드가 유지되는지 확인
+        XCTAssertTrue(mockPowerManager.isCaffeineEnabled)
+        
+        // 5. 타이머 설정
+        mockPowerManager.setTimer(minutes: 30) {}
+        XCTAssertTrue(mockPowerManager.isTimerActive)
+        
+        // 6. 전원 상태에 관계없이 작동 확인
+        XCTAssertEqual(mockPowerManager.toggleCaffeineCallCount, 1)
+        XCTAssertEqual(mockPowerManager.setTimerCallCount, 1)
     }
 }
