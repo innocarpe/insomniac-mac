@@ -9,8 +9,8 @@ class StatusBarController: NSObject, NSMenuDelegate {
     private var menuUpdateTimer: Timer?
     private var timerStatusItem: NSMenuItem?
     
-    override init() {
-        self.powerManager = PowerManager()
+    init(powerManager: PowerManager) {
+        self.powerManager = powerManager
         self.menu = NSMenu()
         super.init()
         self.menu.delegate = self
