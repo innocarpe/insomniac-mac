@@ -11,10 +11,10 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${GREEN}Caffeine DMG 생성 시작...${NC}"
+echo -e "${GREEN}Insomniac DMG 생성 시작...${NC}"
 
 # 변수 설정
-APP_NAME="Caffeine"
+APP_NAME="Insomniac"
 VERSION="1.0.0"
 DMG_NAME="${APP_NAME}-${VERSION}.dmg"
 VOLUME_NAME="${APP_NAME} ${VERSION}"
@@ -49,10 +49,10 @@ ln -s /Applications "$SOURCE_DIR/Applications"
 
 # README 파일 생성
 cat > "$SOURCE_DIR/README.txt" << EOF
-Caffeine 설치 방법
+Insomniac 설치 방법
 ==================
 
-1. Caffeine.app을 Applications 폴더로 드래그하세요.
+1. Insomniac.app을 Applications 폴더로 드래그하세요.
 2. 처음 실행 시 우클릭 → "열기"를 선택하세요.
 3. 설정 다이얼로그에서 "설정하기"를 클릭하고 비밀번호를 한 번만 입력하세요.
 4. 이후부터는 비밀번호 없이 사용할 수 있습니다!
