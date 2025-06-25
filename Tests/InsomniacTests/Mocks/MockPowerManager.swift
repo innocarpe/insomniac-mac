@@ -1,5 +1,5 @@
 import Foundation
-@testable import Caffeine
+@testable import Insomniac
 
 /// PowerManager의 Mock 구현체 - 테스트용
 class MockPowerManager: PowerManager {
