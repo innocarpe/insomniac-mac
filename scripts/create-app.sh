@@ -2,13 +2,13 @@
 
 set -e
 
-echo "📦 Creating Caffeine.app bundle..."
+echo "📦 Creating Insomniac.app bundle..."
 
 # Clean previous app
-rm -rf Caffeine.app
+rm -rf Insomniac.app
 
 # Create app bundle structure
-APP_NAME="Caffeine.app"
+APP_NAME="Insomniac.app"
 CONTENTS="$APP_NAME/Contents"
 MACOS="$CONTENTS/MacOS"
 RESOURCES="$CONTENTS/Resources"
@@ -17,7 +17,7 @@ mkdir -p "$MACOS"
 mkdir -p "$RESOURCES"
 
 # Copy executable
-cp .build/release/Caffeine "$MACOS/"
+cp .build/release/Insomniac "$MACOS/"
 
 # Create Info.plist
 cat > "$CONTENTS/Info.plist" << 'EOF'
@@ -28,15 +28,15 @@ cat > "$CONTENTS/Info.plist" << 'EOF'
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleExecutable</key>
-    <string>Caffeine</string>
+    <string>Insomniac</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
-    <string>com.personal.caffeine</string>
+    <string>com.personal.insomniac</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Caffeine</string>
+    <string>Insomniac</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -56,8 +56,8 @@ cat > "$CONTENTS/Info.plist" << 'EOF'
 EOF
 
 # Copy existing icon or create new one
-if [ -f "Caffeine.app/Contents/Resources/AppIcon.icns" ] && [ -s "Caffeine.app/Contents/Resources/AppIcon.icns" ]; then
-    cp "Caffeine.app/Contents/Resources/AppIcon.icns" "$RESOURCES/AppIcon.icns"
+if [ -f "Insomniac.app/Contents/Resources/AppIcon.icns" ] && [ -s "Insomniac.app/Contents/Resources/AppIcon.icns" ]; then
+    cp "Insomniac.app/Contents/Resources/AppIcon.icns" "$RESOURCES/AppIcon.icns"
 else
     # Generate icon if it doesn't exist
     if [ -f "scripts/create-realistic-icon.swift" ]; then
@@ -69,22 +69,22 @@ else
 fi
 
 # Make executable
-chmod +x "$MACOS/Caffeine"
+chmod +x "$MACOS/Insomniac"
 
 # Sign the app (if you have a developer certificate)
 # codesign --force --deep --sign - "$APP_NAME"
 
-echo "✅ Caffeine.app created successfully!"
+echo "✅ Insomniac.app created successfully!"
 echo ""
 echo "📝 Installation instructions:"
-echo "1. Move Caffeine.app to your Applications folder:"
-echo "   mv Caffeine.app /Applications/"
+echo "1. Move Insomniac.app to your Applications folder:"
+echo "   mv Insomniac.app /Applications/"
 echo ""
 echo "2. Open the app for the first time:"
-echo "   - Right-click on Caffeine.app in Applications"
+echo "   - Right-click on Insomniac.app in Applications"
 echo "   - Select 'Open' from the context menu"
 echo "   - Click 'Open' in the security dialog"
 echo ""
-echo "3. The coffee cup icon will appear in your menu bar!"
+echo "3. The tea cup icon will appear in your menu bar!"
 echo ""
 echo "⚠️  Note: The app will ask for administrator password when toggling caffeine mode."

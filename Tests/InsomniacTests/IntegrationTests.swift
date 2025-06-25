@@ -1,6 +1,6 @@
 import XCTest
 import AppKit
-@testable import Caffeine
+@testable import Insomniac
 
 /// 통합 테스트 - 여러 컴포넌트가 함께 동작하는 시나리오 테스트
 final class IntegrationTests: XCTestCase {
