@@ -1,5 +1,5 @@
 import XCTest
-@testable import Caffeine
+@testable import Insomniac
 
 final class PowerManagerTests: XCTestCase {
     var powerManager: PowerManagerImpl!
@@ -8,15 +8,15 @@ final class PowerManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // 테스트용 UserDefaults 사용
-        userDefaults = UserDefaults(suiteName: "com.caffeine.tests")!
-        userDefaults.removePersistentDomain(forName: "com.caffeine.tests")
+        userDefaults = UserDefaults(suiteName: "com.insomniac.tests")!
+        userDefaults.removePersistentDomain(forName: "com.insomniac.tests")
         powerManager = PowerManagerImpl()
     }
     
     override func tearDown() {
         powerManager?.forceDisableCaffeine()
         powerManager = nil
-        userDefaults?.removePersistentDomain(forName: "com.caffeine.tests")
+        userDefaults?.removePersistentDomain(forName: "com.insomniac.tests")
         userDefaults = nil
         super.tearDown()
     }
