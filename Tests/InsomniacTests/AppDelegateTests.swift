@@ -1,6 +1,6 @@
 import XCTest
 import AppKit
-@testable import Caffeine
+@testable import Insomniac
 
 final class AppDelegateTests: XCTestCase {
     var appDelegate: AppDelegate!

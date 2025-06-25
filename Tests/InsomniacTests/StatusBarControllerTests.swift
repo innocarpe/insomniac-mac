@@ -1,6 +1,6 @@
 import XCTest
 import AppKit
-@testable import Caffeine
+@testable import Insomniac
 
 final class StatusBarControllerTests: XCTestCase {
     var statusBarController: StatusBarController!
