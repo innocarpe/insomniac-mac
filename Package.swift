@@ -4,25 +4,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "Caffeine",
+    name: "Insomniac",
     platforms: [
         .macOS(.v12)
     ],
     products: [
         .executable(
-            name: "Caffeine",
-            targets: ["Caffeine"]
+            name: "Insomniac",
+            targets: ["Insomniac"]
         )
     ],
     dependencies: [],
     targets: [
         .executableTarget(
-            name: "Caffeine",
+            name: "Insomniac",
             dependencies: []
         ),
         .testTarget(
-            name: "CaffeineTests",
-            dependencies: ["Caffeine"]
+            name: "InsomniacTests",
+            dependencies: ["Insomniac"]
         )
     ]
 )
