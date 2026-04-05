@@ -211,13 +211,13 @@ class StatusBarController: NSObject, NSMenuDelegate {
                 self?.updateIcon()
                 self?.rebuildMenu()
                 
-                // Show notification
-                if #available(macOS 10.14, *) {
+                // Show notification (requires valid bundle identifier)
+                if #available(macOS 10.14, *), Bundle.main.bundleIdentifier != nil {
                     let content = UNMutableNotificationContent()
                     content.title = "Caffeine"
                     content.body = "카페인 모드가 종료되었습니다"
                     content.sound = .default
-                    
+
                     let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
                     UNUserNotificationCenter.current().add(request)
                 }
