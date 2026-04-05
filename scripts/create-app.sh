@@ -71,8 +71,8 @@ fi
 # Make executable
 chmod +x "$MACOS/Insomniac"
 
-# Sign the app (if you have a developer certificate)
-# codesign --force --deep --sign - "$APP_NAME"
+# Ad-hoc sign the app (required for macOS Tahoe+)
+codesign --force --deep --sign - "$APP_NAME"
 
 echo "✅ Insomniac.app created successfully!"
 echo ""
@@ -87,4 +87,4 @@ echo "   - Click 'Open' in the security dialog"
 echo ""
 echo "3. The tea cup icon will appear in your menu bar!"
 echo ""
-echo "⚠️  Note: The app will ask for administrator password when toggling caffeine mode."
+echo "☕ IOPMAssertion API를 사용하므로 관리자 비밀번호가 필요하지 않습니다."
