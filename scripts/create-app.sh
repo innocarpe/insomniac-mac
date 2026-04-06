@@ -55,17 +55,14 @@ cat > "$CONTENTS/Info.plist" << 'EOF'
 </plist>
 EOF
 
-# Copy existing icon or create new one
-if [ -f "Insomniac.app/Contents/Resources/AppIcon.icns" ] && [ -s "Insomniac.app/Contents/Resources/AppIcon.icns" ]; then
-    cp "Insomniac.app/Contents/Resources/AppIcon.icns" "$RESOURCES/AppIcon.icns"
+# Copy app icon
+if [ -f "resources/AppIcon.icns" ]; then
+    cp "resources/AppIcon.icns" "$RESOURCES/AppIcon.icns"
+elif [ -f "scripts/create-realistic-icon.swift" ]; then
+    echo "Generating app icon..."
+    ./scripts/create-realistic-icon.swift
 else
-    # Generate icon if it doesn't exist
-    if [ -f "scripts/create-realistic-icon.swift" ]; then
-        echo "Generating app icon..."
-        ./scripts/create-realistic-icon.swift
-    else
-        touch "$RESOURCES/AppIcon.icns"
-    fi
+    touch "$RESOURCES/AppIcon.icns"
 fi
 
 # Make executable
