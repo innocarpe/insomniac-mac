@@ -117,6 +117,3 @@ Package.resolved
 *.swp
 *~
 .*.sw?
-
-# MCP config (API 키 포함)
-.mcp.json
