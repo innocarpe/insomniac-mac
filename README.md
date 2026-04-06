@@ -1,100 +1,96 @@
-# Caffeine
+# Insomniac
 
-A simple macOS menu bar app to prevent your Mac from going to sleep.
+macOS에서 Mac이 잠자기 모드로 들어가는 것을 방지하는 메뉴바 앱입니다.
 
-## Features
+맥북 덮개를 닫아도 Mac이 깨어있도록 하고, 원하는 시간 후 자동으로 꺼지는 타이머 기능을 제공합니다.
 
-- One-click toggle to enable/disable sleep prevention
-- Visual indicator in menu bar (empty cup = off, filled cup = on)
-- Works even when MacBook lid is closed
-- Dark mode support
-- Minimal resource usage
-- Launch at login option
-- **NEW: Auto-off timer** - Schedule caffeine to turn off after 30 minutes to 6 hours
+## 주요 기능
 
-## Requirements
+- 클릭 한 번으로 잠자기 방지 ON/OFF
+- 맥북 덮개를 닫아도 동작
+- 자동 꺼짐 타이머 (5분 ~ 6시간)
+- 실시간 타이머 카운트다운 표시
+- 시작 시 자동 실행 옵션
+- 다크/라이트 모드 지원
+- 관리자 비밀번호 불필요 (IOPMAssertion API 사용)
 
-- macOS 12.0 (Monterey) or later
-- Swift 5.9 or later (for building)
+## 요구사항
 
-## Quick Install
+- macOS 12.0 (Monterey) 이상
+- Swift 5.9 이상 (빌드 시)
 
-### Option 1: Build from source
+## 설치
+
+### 소스에서 빌드
+
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd Caffeine
+git clone https://github.com/innocarpe/insomniac-mac.git
+cd insomniac-mac
 
-# Build the app
+# 릴리스 빌드
 swift build -c release
 
-# Create the app bundle
+# 앱 번들 생성 (아이콘 포함, 코드 서명)
 ./scripts/create-app.sh
 
-# Move to Applications
-mv Caffeine.app /Applications/
+# Applications 폴더로 이동
+mv Insomniac.app /Applications/
 ```
 
-### Option 2: Download pre-built
-(Coming soon)
+### 첫 실행
 
-## First Launch
+1. Applications 폴더에서 `Insomniac.app`을 **우클릭 → 열기**
+2. 보안 다이얼로그에서 "열기" 클릭
+3. 메뉴바에 찻잔 아이콘이 나타나면 완료
 
-1. Right-click on `Caffeine.app` in Applications folder
-2. Select "Open" from the context menu
-3. Click "Open" in the security dialog
-4. **초기 설정**: 첫 실행 시 권한 설정 창이 나타납니다
-   - "설정하기" 클릭
-   - 관리자 비밀번호 입력 (한 번만)
-   - 이후부터는 비밀번호 없이 사용 가능
-5. The coffee cup icon will appear in your menu bar
+## 사용법
 
-## Usage
+- **좌클릭**: 카페인 모드 토글 (ON/OFF)
+- **우클릭**: 메뉴 표시
+  - 카페인 모드 켜기/끄기
+  - 카페인 타이머 (5분, 10분, 30분, 1시간, 2시간, 3시간, 4시간, 5시간, 6시간)
+  - 시작 시 실행
+  - 정보
+  - 종료
 
-- **Left-click**: Toggle caffeine mode on/off
-- **Right-click**: Show menu with options
-  - Toggle caffeine mode
-  - **카페인 타이머**
-    - 30분, 1시간, 2시간... 최대 6시간까지 설정 가능
-    - OFF 상태에서 설정 시: 자동으로 카페인 모드 ON + 설정 시간 후 OFF
-    - ON 상태에서 설정 시: 설정 시간 후 카페인 모드 OFF
-    - 타이머 실행 중에는 남은 시간이 메뉴 상단에 실시간 표시
-  - Launch at login
-  - About
-  - Quit
+### 타이머
 
-When caffeine is enabled, your Mac won't go to sleep even when you close the lid.
+- **OFF 상태에서 타이머 설정**: 자동으로 카페인 모드 ON → 설정 시간 후 OFF
+- **ON 상태에서 타이머 설정**: 설정 시간 후 카페인 모드 OFF
+- 메뉴를 열면 남은 시간이 실시간으로 표시됩니다
 
-## How it Works
+## 동작 원리
 
-The app uses the `pmset` command to control sleep behavior:
-- ON: `pmset -b disablesleep 1` - Prevents sleep on battery
-- OFF: `pmset -b disablesleep 0` - Allows normal sleep
+IOPMAssertion API를 사용하여 시스템 잠자기를 방지합니다.
 
-첫 실행 시 한 번만 관리자 권한을 설정하면, 이후에는 비밀번호 없이 작동합니다.
+- sudo/관리자 권한이 필요 없습니다
+- 앱 종료 시 assertion이 자동 해제되어 안전합니다
+- 타이머 만료 시 맥북 덮개가 닫혀있으면 즉시 잠자기 모드로 전환합니다
 
-## Development
+## 개발
 
-See [CLAUDE.md](CLAUDE.md) for development guidelines and [docs/PRD.md](docs/PRD.md) for detailed product requirements.
-
-### Building
 ```bash
+# 빌드
 swift build
+
+# 테스트
 swift test
-swift run
-```
 
-### Creating App Bundle
-```bash
+# 앱 번들 생성
 ./scripts/create-app.sh
+
+# DMG 설치 파일 생성
+./scripts/create-dmg.sh
 ```
 
-## Troubleshooting
+개발 가이드라인은 [CLAUDE.md](CLAUDE.md)를 참고하세요.
 
-- **App won't open**: Right-click and select "Open" instead of double-clicking
-- **Icon not showing**: Check System Preferences > Security & Privacy
-- **Caffeine not working**: Make sure to grant administrator permissions when prompted
+## 트러블슈팅
+
+- **앱이 열리지 않음**: 더블클릭 대신 우클릭 → "열기" 선택
+- **메뉴바에 아이콘이 안 보임**: 시스템 설정 → 메뉴 막대에서 Insomniac이 허용되어 있는지 확인. Bartender 같은 메뉴바 관리 앱이 숨기고 있을 수 있습니다.
+- **macOS Tahoe 업그레이드 후 문제**: v3.0.0 이상으로 업데이트하세요
 
 ## License
 
-Personal use only.
+MIT
