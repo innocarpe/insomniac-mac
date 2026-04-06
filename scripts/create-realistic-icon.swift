@@ -187,7 +187,7 @@ func createRealisticCoffeeIcon(size: CGFloat) -> NSImage? {
 }
 
 // Generate iconset
-let iconsetPath = "Caffeine.iconset"
+let iconsetPath = "Insomniac.iconset"
 try? FileManager.default.createDirectory(atPath: iconsetPath, withIntermediateDirectories: true)
 
 let sizes: [(Int, Int)] = [
@@ -221,7 +221,7 @@ print("\n📦 Converting to .icns...")
 // Convert to icns
 let task = Process()
 task.launchPath = "/usr/bin/iconutil"
-task.arguments = ["-c", "icns", iconsetPath, "-o", "Caffeine.app/Contents/Resources/AppIcon.icns"]
+task.arguments = ["-c", "icns", iconsetPath, "-o", "Insomniac.app/Contents/Resources/AppIcon.icns"]
 task.launch()
 task.waitUntilExit()
 
@@ -231,7 +231,7 @@ try? FileManager.default.removeItem(atPath: iconsetPath)
 // Refresh
 let refreshTask = Process()
 refreshTask.launchPath = "/usr/bin/touch"
-refreshTask.arguments = ["Caffeine.app"]
+refreshTask.arguments = ["Insomniac.app"]
 refreshTask.launch()
 refreshTask.waitUntilExit()
 
