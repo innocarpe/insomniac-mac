@@ -22,7 +22,7 @@ class StatusBarController: NSObject, NSMenuDelegate {
     
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
+
         if let button = statusItem?.button {
             button.action = #selector(toggleCaffeine)
             button.target = self
@@ -113,9 +113,9 @@ class StatusBarController: NSObject, NSMenuDelegate {
     
     private func updateIcon() {
         guard let button = statusItem?.button else { return }
-        
+
         let iconName = powerManager.isCaffeineEnabled ? "cup.and.saucer.fill" : "cup.and.saucer"
-        
+
         if let image = NSImage(systemSymbolName: iconName, accessibilityDescription: "Caffeine") {
             image.isTemplate = true
             button.image = image

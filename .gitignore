@@ -95,8 +95,8 @@ fastlane/test_output
 
 iOSInjectionProject/
 
-# Caffeine specific
-Caffeine.app/
+# App bundle
+Insomniac.app/
 *.log
 *.tmp
 .vscode/
