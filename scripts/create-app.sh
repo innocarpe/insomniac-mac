@@ -56,8 +56,8 @@ cat > "$CONTENTS/Info.plist" << 'EOF'
 EOF
 
 # Copy app icon
-if [ -f "Resources/AppIcon.icns" ]; then
-    cp "Resources/AppIcon.icns" "$RESOURCES/AppIcon.icns"
+if [ -f "resources/AppIcon.icns" ]; then
+    cp "resources/AppIcon.icns" "$RESOURCES/AppIcon.icns"
 elif [ -f "scripts/create-realistic-icon.swift" ]; then
     echo "Generating app icon..."
     ./scripts/create-realistic-icon.swift
